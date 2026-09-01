@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PowerBI Data Extractor &bull; Contourner les Blocages d'Export</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Segoe UI', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            dark: {
+              950: '#07090E',
+              900: '#0E131F',
+              850: '#141B2D',
+              800: '#1C253E',
+              700: '#2A3656',
+            },
+            pbi: {
+              yellow: '#F2C811',
+              blue: '#118DFF',
+              darkblue: '#005FB8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #07090E; color: #F3F4F6; }
+    .drop-active { border-color: #F2C811 !important; background-color: rgba(242, 200, 17, 0.05) !important; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-pbi-yellow selection:text-black">
+
+  <!-- Header -->
+  <header class="border-b border-dark-800 bg-dark-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-pbi-yellow flex items-center justify-center font-bold text-black shadow-lg text-lg">
+          📊
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">PowerBI <span class="text-pbi-yellow font-medium">Extractor</span></span>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">Bypass Export Lock</span>
+          </div>
+          <p class="text-xs text-zinc-400">Extraction de Tableaux & Matrices Power BI &bull; Export Excel & CSV</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-850 border border-dark-700 text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-zinc-300 font-medium">Gemini Vision Actif</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 flex flex-col gap-8 w-full">
+
+    <!-- Mode Selector Tabs -->
+    <div class="flex items-center gap-3 border-b border-dark-800 pb-4">
+      <button onclick="switchMode('screenshot')" id="mode-screenshot-btn" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-yellow text-black shadow-lg">
+        <span>📸</span> <span>Méthode 1 : Capture d'Écran / Vision IA (Recommandé)</span>
+      </button>
+      <button onclick="switchMode('url')" id="mode-url-btn" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700">
+        <span>🌐</span> <span>Méthode 2 : Lien URL & Interception Playwright</span>
+      </button>
+    </div>
+
+    <!-- Mode 1: Screenshot Vision Extractor -->
+    <section id="section-screenshot" class="bg-dark-900 border border-dark-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-5">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-1">
+          <span>📸 Extraction par Capture d'Écran (Universelle)</span>
+          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fonctionne avec SSO & 2FA</span>
+        </h2>
+        <p class="text-zinc-400 text-sm">
+          Faites une capture de votre tableau/matrice Power BI, puis <strong class="text-white">collez-la directement avec Ctrl+V</strong> ou glissez-la dans la zone ci-dessous.
+        </p>
+      </div>
+
+      <!-- Drag and drop zone -->
+      <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-dark-700 hover:border-pbi-yellow/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 bg-dark-950/40 min-h-[180px]">
+        <input id="fileInput" type="file" accept="image/*" class="hidden" onchange="handleFileSelected(event)">
+        <div id="dropPrompt" class="flex flex-col items-center gap-2">
+          <div class="w-12 h-12 rounded-full bg-dark-850 border border-dark-700 flex items-center justify-center text-2xl text-pbi-yellow shadow-inner">
+            📥
+          </div>
+          <p class="text-sm font-semibold text-zinc-200">
+            Cliquez pour choisir une image ou <span class="text-pbi-yellow underline">Collez avec Ctrl+V</span>
+          </p>
+          <p class="text-xs text-zinc-500">Formats supportés : PNG, JPEG, WebP, BMP</p>
+        </div>
+
+        <!-- Thumbnail preview when image loaded -->
+        <div id="previewContainer" class="hidden flex-col items-center gap-2">
+          <img id="imagePreview" src="" alt="Capture Power BI" class="max-h-56 rounded-lg border border-dark-700 shadow-lg object-contain">
+          <p id="fileNameDisplay" class="text-xs text-zinc-400 font-mono"></p>
+        </div>
+      </div>
+
+      <!-- Optional instructions & Action button -->
+      <div class="flex flex-col sm:flex-row gap-3 items-center">
+        <input id="visionInstructions" type="text" placeholder="Instructions facultatives (ex: 'Extrais uniquement le tableau de gauche')" class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-pbi-yellow transition">
+        <button id="extractScreenshotBtn" onclick="runScreenshotExtraction()" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-amber-500 to-pbi-yellow hover:from-amber-400 hover:to-pbi-yellow text-black font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+          <span id="screenBtnText">Extraire les Données en Excel</span>
+          <span id="screenBtnIcon">⚡</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Mode 2: Playwright Network Interceptor -->
+    <section id="section-url" class="hidden bg-dark-900 border border-dark-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex-col gap-5">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-1">
+          <span>🌐 Extraction par Lien / URL Power BI (Playwright)</span>
+          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">Liens Publics / Embeds</span>
+        </h2>
+        <p class="text-zinc-400 text-sm">
+          Pour les rapports partagés via un lien web (<code class="text-pbi-yellow">app.powerbi.com/view?r=...</code> ou iframe). Le navigateur intercepte les requêtes réseau internes <code class="text-zinc-300">querydata</code>.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 items-center">
+        <input id="pbiUrlInput" type="url" placeholder="https://app.powerbi.com/view?r=eyJrIjoi..." class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-pbi-blue transition font-mono">
+        <button id="extractUrlBtn" onclick="runUrlExtraction()" class="w-full sm:w-auto px-8 py-3 bg-pbi-blue hover:bg-pbi-darkblue text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+          <span id="urlBtnText">Intercepter & Extraire</span>
+          <span id="urlBtnIcon">🚀</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Results Data Section -->
+    <section id="resultsSection" class="hidden flex-col gap-4">
+      
+      <!-- Top Action Toolbar -->
+      <div class="bg-dark-900 border border-dark-700 rounded-2xl p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold">
+            ✓
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-base text-white">Données Power BI Extraites</h3>
+              <span id="countBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">0 lignes</span>
+            </div>
+            <p id="methodStats" class="text-xs text-zinc-400 mt-0.5">Extrait avec succès</p>
+          </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <input id="filterInput" oninput="filterData()" type="text" placeholder="🔍 Filtrer les colonnes..." class="bg-dark-950 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-pbi-yellow transition w-full sm:w-36">
+          
+          <button onclick="downloadPBIX()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-pbi-yellow hover:from-amber-400 hover:to-pbi-yellow text-black rounded-lg text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <span>💾</span> <span>Télécharger Fichier Power BI (.pbit / .pbix)</span>
+          </button>
+
+          <button onclick="downloadExcel()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition flex items-center gap-1 cursor-pointer">
+            <span>📊</span> <span>Excel</span>
+          </button>
+          
+          <button onclick="downloadCSV()" class="px-3 py-2 bg-dark-800 hover:bg-dark-700 text-zinc-200 border border-dark-700 rounded-lg text-xs font-semibold transition flex items-center gap-1 cursor-pointer">
+            <span>📄</span> <span>CSV</span>
+          </button>
+
+          <button onclick="copyJSON()" class="px-2.5 py-2 bg-dark-800 hover:bg-dark-700 text-zinc-300 border border-dark-700 rounded-lg text-xs font-medium transition cursor-pointer" title="Copier JSON">
+            <span id="copyText">📋</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="bg-dark-900 border border-dark-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+        <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead id="tableHead" class="bg-dark-950 text-xs font-semibold text-zinc-400 uppercase tracking-wider sticky top-0 border-b border-dark-800 z-10">
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-dark-800 text-zinc-300 text-xs">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-dark-800 bg-dark-950/80 py-6 text-center text-xs text-zinc-500">
+    PowerBI Data Extractor &bull; Développé pour contourner les restrictions de partage &bull; Propulsé par Google Gemini Vision
+  </footer>
+
+  <!-- App Client Script -->
+  <script>
+    let currentImageFile = null;
+    let extractedRows = [];
+    let currentColumns = [];
+
+    // Global Paste Listener for Screenshots (Ctrl+V)
+    window.addEventListener('paste', e => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          setImage(file);
+          break;
+        }
+      }
+    });
+
+    // Drag & Drop Listener
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drop-active'); });
+    dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drop-active'); });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drop-active');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        setImage(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFileSelected(event) {
+      if (event.target.files && event.target.files[0]) {
+        setImage(event.target.files[0]);
+      }
+    }
+
+    function setImage(file) {
+      currentImageFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('fileNameDisplay').innerText = `${file.name || 'Capture collee'} (${Math.round(file.size / 1024)} KB)`;
+        document.getElementById('dropPrompt').classList.add('hidden');
+        document.getElementById('previewContainer').classList.remove('hidden');
+        document.getElementById('previewContainer').classList.add('flex');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function switchMode(mode) {
+      const isScreen = mode === 'screenshot';
+      document.getElementById('section-screenshot').style.display = isScreen ? 'flex' : 'none';
+      document.getElementById('section-url').style.display = isScreen ? 'none' : 'flex';
+
+      document.getElementById('mode-screenshot-btn').className = isScreen 
+        ? "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-yellow text-black shadow-lg"
+        : "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
+
+      document.getElementById('mode-url-btn').className = !isScreen 
+        ? "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-blue text-white shadow-lg"
+        : "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
+    }
+
+    async function runScreenshotExtraction() {
+      if (!currentImageFile) {
+        alert("Veuillez coller (Ctrl+V) ou uploader une capture d'écran du rapport Power BI d'abord.");
+        return;
+      }
+
+      const btn = document.getElementById('extractScreenshotBtn');
+      btn.disabled = true;
+      document.getElementById('screenBtnText').innerText = "Gemini Vision extrait les tables...";
+      document.getElementById('screenBtnIcon').innerText = "⏳";
+
+      const formData = new FormData();
+      formData.append("file", currentImageFile);
+      const instructions = document.getElementById('visionInstructions').value.trim();
+      if (instructions) formData.append("instructions", instructions);
+
+      try {
+        const response = await fetch('/api/extract/screenshot', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error("Erreur d'analyse de l'image");
+
+        const data = await response.json();
+        extractedRows = data.records;
+        currentColumns = data.columns;
+
+        renderResults(data, `Méthode 1 (Gemini Vision) &bull; ${data.execution_time_sec}s`);
+      } catch (e) {
+        alert("Erreur : " + e.message);
+      } finally {
+        btn.disabled = false;
+        document.getElementById('screenBtnText').innerText = "Extraire les Données en Excel";
+        document.getElementById('screenBtnIcon').innerText = "⚡";
+      }
+    }
+
+    async function runUrlExtraction() {
+      const url = document.getElementById('pbiUrlInput').value.trim();
+      if (!url) {
+        alert("Veuillez saisir une URL de rapport Power BI.");
+        return;
+      }
+
+      const btn = document.getElementById('extractUrlBtn');
+      btn.disabled = true;
+      document.getElementById('urlBtnText').innerText = "Interception Playwright en cours...";
+      document.getElementById('urlBtnIcon').innerText = "⏳";
+
+      try {
+        const response = await fetch('/api/extract/url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.detail || "Erreur lors du chargement du rapport");
+        }
+
+        const data = await response.json();
+        extractedRows = data.records;
+        currentColumns = data.columns;
+
+        renderResults(data, `Méthode 2 (${data.method}) &bull; ${data.execution_time_sec}s`);
+      } catch (e) {
+        alert("Erreur : " + e.message);
+      } finally {
+        btn.disabled = false;
+        document.getElementById('urlBtnText').innerText = "Intercepter & Extraire";
+        document.getElementById('urlBtnIcon').innerText = "🚀";
+      }
+    }
+
+    function renderResults(data, methodText) {
+      document.getElementById('countBadge').innerText = `${data.count} lignes extraites`;
+      document.getElementById('methodStats').innerHTML = methodText;
+
+      renderTable(data.columns, data.records);
+
+      document.getElementById('resultsSection').classList.remove('hidden');
+      document.getElementById('resultsSection').classList.add('flex');
+      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderTable(columns, records) {
+      const thead = document.getElementById('tableHead');
+      const tbody = document.getElementById('tableBody');
+
+      thead.innerHTML = `<tr>
+        <th class="py-3 px-4 w-12 text-center text-zinc-500">#</th>
+        ${columns.map(c => `<th class="py-3 px-4 font-semibold text-zinc-200">${c}</th>`).join('')}
+      </tr>`;
+
+      if (!records || records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${columns.length + 1}" class="text-center py-8 text-zinc-500 italic">Aucune donnée tabulaire détectée.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = records.map((row, idx) => `
+        <tr class="hover:bg-dark-850/60 transition">
+          <td class="py-3 px-4 text-center text-zinc-500 font-mono">${idx + 1}</td>
+          ${columns.map(c => `<td class="py-3 px-4 text-zinc-200">${row[c] !== undefined ? row[c] : ""}</td>`).join('')}
+        </tr>
+      `).join('');
+    }
+
+    function filterData() {
+      const q = document.getElementById('filterInput').value.toLowerCase().trim();
+      if (!q) {
+        renderTable(currentColumns, extractedRows);
+        return;
+      }
+      const filtered = extractedRows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+      renderTable(currentColumns, filtered);
+    }
+
+    async function downloadPBIX() {
+      if (!extractedRows.length) return;
+      const res = await fetch('/api/export/pbix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records: extractedRows, filename: 'powerbi_rapport_extrait' })
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'powerbi_rapport_extrait.pbit';
+      a.click();
+    }
+
+    async function downloadExcel() {
+      if (!extractedRows.length) return;
+      const res = await fetch('/api/export/excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records: extractedRows, filename: 'powerbi_export' })
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'powerbi_export.xlsx';
+      a.click();
+    }
+
+    async function downloadCSV() {
+      if (!extractedRows.length) return;
+      const res = await fetch('/api/export/csv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records: extractedRows, filename: 'powerbi_export' })
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'powerbi_export.csv';
+      a.click();
+    }
+
+    function copyJSON() {
+      if (!extractedRows.length) return;
+      navigator.clipboard.writeText(JSON.stringify(extractedRows, null, 2));
+      const t = document.getElementById('copyText');
+      t.innerText = "✓ Copié !";
+      setTimeout(() => { t.innerText = "📋 JSON"; }, 2000);
+    }
+  </script>
+</body>
+</html>
