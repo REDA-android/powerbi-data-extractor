@@ -20,6 +20,8 @@ from vision_extractor import PowerBIVisionExtractor
 from network_interceptor import PowerBINetworkInterceptor
 from exporter import PowerBIExporter
 from pbix_generator import PBIXGenerator
+from momoa_engine import MoMoASwarm
+from chatbot_engine import PowerBIChatbot
 
 app = FastAPI(title="PowerBI Data Extractor", version="1.0.0")
 
@@ -36,6 +38,23 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 
 vision = PowerBIVisionExtractor()
 interceptor = PowerBINetworkInterceptor(vision)
+momoa = MoMoASwarm()
+chatbot = PowerBIChatbot()
+
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    current_data: Optional[List[Dict[str, Any]]] = None
+
+
+class MoMoARequest(BaseModel):
+    task: str
+    context_data: Optional[str] = None
 
 
 class URLExtractRequest(BaseModel):
@@ -167,3 +186,18 @@ async def export_pbix(req: ExportRequest):
         media_type="application/octet-stream",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@app.post("/api/chat")
+async def chat_endpoint(req: ChatRequest):
+    """Assistant Chatbot contextuel pour poser des questions ou générer des formules DAX/Python."""
+    raw_messages = [{"role": m.role, "content": m.content} for m in req.messages]
+    response_text = chatbot.reply(messages=raw_messages, current_data=req.current_data)
+    return {"reply": response_text}
+
+
+@app.post("/api/momoa/solve")
+async def momoa_solve_endpoint(req: MoMoARequest):
+    """Essaim multi-agents MoMoA (Aria, Devon, Vigil, Volt, Nexus)."""
+    res = momoa.solve(task=req.task, context_data=req.context_data)
+    return res

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PowerBI Data Extractor &bull; Contourner les Blocages d'Export</title>
+  <title>PowerBI Data Studio &bull; Extractor, MoMoA & Chatbot IA</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts -->
@@ -22,16 +22,17 @@
           },
           colors: {
             dark: {
-              950: '#07090E',
-              900: '#0E131F',
-              850: '#141B2D',
-              800: '#1C253E',
-              700: '#2A3656',
+              950: '#06080E',
+              900: '#0C101D',
+              850: '#12182B',
+              800: '#19223D',
+              700: '#253259',
             },
             pbi: {
               yellow: '#F2C811',
               blue: '#118DFF',
               darkblue: '#005FB8',
+              purple: '#8B5CF6',
             }
           }
         }
@@ -39,45 +40,67 @@
     }
   </script>
   <style>
-    body { background-color: #07090E; color: #F3F4F6; }
+    body { background-color: #06080E; color: #F3F4F6; }
     .drop-active { border-color: #F2C811 !important; background-color: rgba(242, 200, 17, 0.05) !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0C101D; }
+    ::-webkit-scrollbar-thumb { background: #253259; border-radius: 4px; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-pbi-yellow selection:text-black">
 
   <!-- Header -->
-  <header class="border-b border-dark-800 bg-dark-900/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+  <header class="border-b border-dark-800 bg-dark-900/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-pbi-yellow flex items-center justify-center font-bold text-black shadow-lg text-lg">
           📊
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg tracking-tight text-white">PowerBI <span class="text-pbi-yellow font-medium">Extractor</span></span>
-            <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">Bypass Export Lock</span>
+            <span class="font-extrabold text-lg tracking-tight text-white">PowerBI <span class="text-pbi-yellow font-medium">Studio</span></span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">v2.0 &bull; MoMoA & Chatbot</span>
           </div>
-          <p class="text-xs text-zinc-400">Extraction de Tableaux & Matrices Power BI &bull; Export Excel & CSV</p>
+          <p class="text-xs text-zinc-400 hidden sm:block">Extraction PBIX &bull; Swarm Multi-Agents MoMoA &bull; Assistant IA</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-850 border border-dark-700 text-xs">
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1.5 bg-dark-950 p-1 rounded-xl border border-dark-800 text-xs font-semibold">
+        <button onclick="setMainTab('extractor')" id="tab-extractor" class="px-3.5 py-2 rounded-lg bg-pbi-yellow text-black shadow-md transition flex items-center gap-1.5">
+          <span>📊</span> <span>Extracteur PBIX</span>
+        </button>
+        <button onclick="setMainTab('momoa')" id="tab-momoa" class="px-3.5 py-2 rounded-lg text-zinc-400 hover:text-white transition flex items-center gap-1.5">
+          <span>🐝</span> <span>MoMoA Swarm</span>
+        </button>
+        <button onclick="setMainTab('chat')" id="tab-chat" class="px-3.5 py-2 rounded-lg text-zinc-400 hover:text-white transition flex items-center gap-1.5">
+          <span>💬</span> <span>Chatbot IA</span>
+        </button>
+      </nav>
+
+      <!-- Status Badge -->
+      <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-850 border border-dark-700 text-xs">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-zinc-300 font-medium">Gemini Vision Actif</span>
+        <span class="text-zinc-300 font-medium">Gemini 3.5 &bull; En Ligne</span>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-6 py-8 flex-1 flex flex-col gap-8 w-full">
+  <!-- ======================================================== -->
+  <!-- TAB 1: POWERBI EXTRACTOR -->
+  <!-- ======================================================== -->
+  <main id="view-extractor" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 flex flex-col gap-8 w-full">
 
-    <!-- Mode Selector Tabs -->
-    <div class="flex items-center gap-3 border-b border-dark-800 pb-4">
-      <button onclick="switchMode('screenshot')" id="mode-screenshot-btn" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-yellow text-black shadow-lg">
-        <span>📸</span> <span>Méthode 1 : Capture d'Écran / Vision IA (Recommandé)</span>
+    <!-- Sub Mode Tabs -->
+    <div class="flex items-center gap-3 border-b border-dark-800 pb-3">
+      <button onclick="switchExtractorMode('screenshot')" id="mode-screenshot-btn" class="px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-pbi-yellow text-black shadow-md">
+        <span>📸</span> <span>Méthode 1 : Capture d'Écran (SSO / 2FA)</span>
       </button>
-      <button onclick="switchMode('url')" id="mode-url-btn" class="px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700">
-        <span>🌐</span> <span>Méthode 2 : Lien URL & Interception Playwright</span>
+      <button onclick="switchExtractorMode('url')" id="mode-url-btn" class="px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700">
+        <span>🌐</span> <span>Méthode 2 : Lien URL & Playwright</span>
       </button>
     </div>
 
@@ -86,52 +109,51 @@
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-1">
           <span>📸 Extraction par Capture d'Écran (Universelle)</span>
-          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fonctionne avec SSO & 2FA</span>
+          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Bypass Verrouillage</span>
         </h2>
         <p class="text-zinc-400 text-sm">
-          Faites une capture de votre tableau/matrice Power BI, puis <strong class="text-white">collez-la directement avec Ctrl+V</strong> ou glissez-la dans la zone ci-dessous.
+          Faites une capture de votre tableau Power BI, puis <strong class="text-white">collez-la avec Ctrl+V</strong> ou glissez-la dans la zone ci-dessous.
         </p>
       </div>
 
-      <!-- Drag and drop zone -->
-      <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-dark-700 hover:border-pbi-yellow/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 bg-dark-950/40 min-h-[180px]">
+      <!-- Drag & Drop Zone -->
+      <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-dark-700 hover:border-pbi-yellow/60 rounded-2xl p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 bg-dark-950/40 min-h-[170px]">
         <input id="fileInput" type="file" accept="image/*" class="hidden" onchange="handleFileSelected(event)">
         <div id="dropPrompt" class="flex flex-col items-center gap-2">
           <div class="w-12 h-12 rounded-full bg-dark-850 border border-dark-700 flex items-center justify-center text-2xl text-pbi-yellow shadow-inner">
             📥
           </div>
           <p class="text-sm font-semibold text-zinc-200">
-            Cliquez pour choisir une image ou <span class="text-pbi-yellow underline">Collez avec Ctrl+V</span>
+            Cliquez pour choisir une capture ou <span class="text-pbi-yellow underline">Collez avec Ctrl+V</span>
           </p>
-          <p class="text-xs text-zinc-500">Formats supportés : PNG, JPEG, WebP, BMP</p>
+          <p class="text-xs text-zinc-500">Formats : PNG, JPEG, WebP, BMP</p>
         </div>
 
-        <!-- Thumbnail preview when image loaded -->
         <div id="previewContainer" class="hidden flex-col items-center gap-2">
-          <img id="imagePreview" src="" alt="Capture Power BI" class="max-h-56 rounded-lg border border-dark-700 shadow-lg object-contain">
+          <img id="imagePreview" src="" alt="Capture Power BI" class="max-h-52 rounded-lg border border-dark-700 shadow-lg object-contain">
           <p id="fileNameDisplay" class="text-xs text-zinc-400 font-mono"></p>
         </div>
       </div>
 
-      <!-- Optional instructions & Action button -->
+      <!-- Actions -->
       <div class="flex flex-col sm:flex-row gap-3 items-center">
-        <input id="visionInstructions" type="text" placeholder="Instructions facultatives (ex: 'Extrais uniquement le tableau de gauche')" class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-pbi-yellow transition">
+        <input id="visionInstructions" type="text" placeholder="Instructions facultatives (ex: 'Extrais uniquement le tableau de ventes')" class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-pbi-yellow transition">
         <button id="extractScreenshotBtn" onclick="runScreenshotExtraction()" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-amber-500 to-pbi-yellow hover:from-amber-400 hover:to-pbi-yellow text-black font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
-          <span id="screenBtnText">Extraire les Données en Excel</span>
+          <span id="screenBtnText">Extraire les Données</span>
           <span id="screenBtnIcon">⚡</span>
         </button>
       </div>
     </section>
 
-    <!-- Mode 2: Playwright Network Interceptor -->
+    <!-- Mode 2: Playwright URL Interceptor -->
     <section id="section-url" class="hidden bg-dark-900 border border-dark-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex-col gap-5">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-1">
-          <span>🌐 Extraction par Lien / URL Power BI (Playwright)</span>
-          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">Liens Publics / Embeds</span>
+          <span>🌐 Extraction par Lien Power BI</span>
+          <span class="text-xs font-normal px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">Liens Web & Embeds</span>
         </h2>
         <p class="text-zinc-400 text-sm">
-          Pour les rapports partagés via un lien web (<code class="text-pbi-yellow">app.powerbi.com/view?r=...</code> ou iframe). Le navigateur intercepte les requêtes réseau internes <code class="text-zinc-300">querydata</code>.
+          Pour les rapports partagés via URL (<code class="text-pbi-yellow">app.powerbi.com/view?r=...</code>). Intercepte les flux <code class="text-zinc-300">querydata</code>.
         </p>
       </div>
 
@@ -144,30 +166,28 @@
       </div>
     </section>
 
-    <!-- Results Data Section -->
+    <!-- Results Toolbar & Table -->
     <section id="resultsSection" class="hidden flex-col gap-4">
-      
-      <!-- Top Action Toolbar -->
-      <div class="bg-dark-900 border border-dark-700 rounded-2xl p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="bg-dark-900 border border-dark-700 rounded-2xl p-5 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold">
             ✓
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-white">Données Power BI Extraites</h3>
+              <h3 class="font-bold text-base text-white">Données Extraites</h3>
               <span id="countBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">0 lignes</span>
             </div>
-            <p id="methodStats" class="text-xs text-zinc-400 mt-0.5">Extrait avec succès</p>
+            <p id="methodStats" class="text-xs text-zinc-400 mt-0.5">Extraction réussie</p>
           </div>
         </div>
 
-        <!-- Export Buttons -->
-        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          <input id="filterInput" oninput="filterData()" type="text" placeholder="🔍 Filtrer les colonnes..." class="bg-dark-950 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-pbi-yellow transition w-full sm:w-36">
+        <!-- Export Toolbar -->
+        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <input id="filterInput" oninput="filterData()" type="text" placeholder="🔍 Filtrer..." class="bg-dark-950 border border-dark-700 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-pbi-yellow transition w-full sm:w-32">
           
-          <button onclick="downloadPBIX()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-pbi-yellow hover:from-amber-400 hover:to-pbi-yellow text-black rounded-lg text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
-            <span>💾</span> <span>Télécharger Fichier Power BI (.pbit / .pbix)</span>
+          <button onclick="downloadPBIX()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-pbi-yellow hover:from-amber-400 hover:to-pbi-yellow text-black rounded-lg text-xs font-bold shadow-md transition flex items-center gap-1 cursor-pointer">
+            <span>💾</span> <span>Télécharger PBIX / PBIT</span>
           </button>
 
           <button onclick="downloadExcel()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition flex items-center gap-1 cursor-pointer">
@@ -178,15 +198,15 @@
             <span>📄</span> <span>CSV</span>
           </button>
 
-          <button onclick="copyJSON()" class="px-2.5 py-2 bg-dark-800 hover:bg-dark-700 text-zinc-300 border border-dark-700 rounded-lg text-xs font-medium transition cursor-pointer" title="Copier JSON">
-            <span id="copyText">📋</span>
+          <button onclick="openChatWithData()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md transition flex items-center gap-1 cursor-pointer">
+            <span>💬</span> <span>Analyser avec l'IA</span>
           </button>
         </div>
       </div>
 
       <!-- Data Table -->
       <div class="bg-dark-900 border border-dark-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
-        <div class="overflow-x-auto max-h-[550px] overflow-y-auto">
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
           <table class="w-full text-left text-sm border-collapse">
             <thead id="tableHead" class="bg-dark-950 text-xs font-semibold text-zinc-400 uppercase tracking-wider sticky top-0 border-b border-dark-800 z-10">
             </thead>
@@ -195,14 +215,195 @@
           </table>
         </div>
       </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- TAB 2: MOMOA MULTI-AGENT SWARM -->
+  <!-- ======================================================== -->
+  <main id="view-momoa" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 flex-col gap-6 w-full">
+    
+    <!-- Hero Banner -->
+    <section class="bg-dark-900 border border-dark-700 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-5">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-2xl shadow-lg">
+          🐝
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-white">MoMoA Swarm Studio</h2>
+          <p class="text-zinc-400 text-xs">Mixture of Mixture of Agents &bull; 4 Spécialistes IA + 1 Arbitre de Consensus Nexus</p>
+        </div>
+      </div>
+
+      <!-- Task Input Form -->
+      <div class="flex flex-col gap-3">
+        <label class="text-xs font-semibold text-zinc-300">Votre problème ou tâche complexe (Code, DAX, Modélisation, Automatisation) :</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input id="momoaTaskInput" type="text" placeholder="Ex: Créer une mesure DAX de calcul de churn client avec fenêtrage glissant" class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500 transition" value="Créer une formule DAX optimisée pour calculer la croissance Year-over-Year (YoY) des ventes">
+          <button id="momoaSolveBtn" onclick="runMoMoASwarm()" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+            <span id="momoaBtnText">Lancer l'Essaim MoMoA</span>
+            <span id="momoaBtnIcon">🐝</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Swarm Results Section -->
+    <section id="momoaResults" class="hidden flex-col gap-6">
+      
+      <!-- 4 Specialists Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Aria -->
+        <div class="bg-dark-900 border border-dark-700 rounded-2xl p-4 shadow-xl flex flex-col gap-2">
+          <div class="flex items-center gap-2 border-b border-dark-800 pb-2">
+            <span class="text-lg">📐</span>
+            <span class="font-bold text-xs text-indigo-400">Aria &bull; Architecte</span>
+          </div>
+          <div id="ariaResponse" class="text-xs text-zinc-300 whitespace-pre-wrap max-h-60 overflow-y-auto font-mono"></div>
+        </div>
+
+        <!-- Devon -->
+        <div class="bg-dark-900 border border-dark-700 rounded-2xl p-4 shadow-xl flex flex-col gap-2">
+          <div class="flex items-center gap-2 border-b border-dark-800 pb-2">
+            <span class="text-lg">💻</span>
+            <span class="font-bold text-xs text-cyan-400">Devon &bull; Ingénieur</span>
+          </div>
+          <div id="devonResponse" class="text-xs text-zinc-300 whitespace-pre-wrap max-h-60 overflow-y-auto font-mono"></div>
+        </div>
+
+        <!-- Vigil -->
+        <div class="bg-dark-900 border border-dark-700 rounded-2xl p-4 shadow-xl flex flex-col gap-2">
+          <div class="flex items-center gap-2 border-b border-dark-800 pb-2">
+            <span class="text-lg">🛡️</span>
+            <span class="font-bold text-xs text-rose-400">Vigil &bull; Sécurité</span>
+          </div>
+          <div id="vigilResponse" class="text-xs text-zinc-300 whitespace-pre-wrap max-h-60 overflow-y-auto font-mono"></div>
+        </div>
+
+        <!-- Volt -->
+        <div class="bg-dark-900 border border-dark-700 rounded-2xl p-4 shadow-xl flex flex-col gap-2">
+          <div class="flex items-center gap-2 border-b border-dark-800 pb-2">
+            <span class="text-lg">⚡</span>
+            <span class="font-bold text-xs text-amber-400">Volt &bull; Optimiseur</span>
+          </div>
+          <div id="voltResponse" class="text-xs text-zinc-300 whitespace-pre-wrap max-h-60 overflow-y-auto font-mono"></div>
+        </div>
+      </div>
+
+      <!-- Nexus Master Consensus Card -->
+      <div class="bg-dark-900 border border-purple-500/30 rounded-2xl p-6 shadow-2xl flex flex-col gap-3 relative overflow-hidden">
+        <div class="flex items-center justify-between border-b border-dark-800 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg font-bold">
+              👑
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-white">Nexus &bull; Synthèse de Consensus Finale</h3>
+              <p class="text-[11px] text-zinc-400">Code unifié et validé par les 4 spécialistes</p>
+            </div>
+          </div>
+          <button onclick="copyNexusCode()" class="text-xs px-3 py-1.5 bg-dark-800 hover:bg-dark-700 text-zinc-200 border border-dark-700 rounded-lg transition">
+            📋 Copier le Code
+          </button>
+        </div>
+        <div id="nexusResponse" class="text-xs text-zinc-200 whitespace-pre-wrap font-mono p-4 rounded-xl bg-dark-950 border border-dark-800 max-h-96 overflow-y-auto"></div>
+      </div>
 
     </section>
 
   </main>
 
+  <!-- ======================================================== -->
+  <!-- TAB 3: CHATBOT IA ANALYTICS -->
+  <!-- ======================================================== -->
+  <main id="view-chat" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8 flex-1 flex-col gap-4 w-full h-[80vh]">
+    
+    <!-- Chat Header -->
+    <div class="bg-dark-900 border border-dark-700 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl font-bold">
+          💬
+        </div>
+        <div>
+          <h2 class="font-bold text-base text-white">Assistant IA Power BI & Analytics</h2>
+          <p class="text-xs text-zinc-400">Posez vos questions, demandez des formules DAX ou l'analyse de vos tables</p>
+        </div>
+      </div>
+      <button onclick="clearChat()" class="text-xs px-3 py-1.5 bg-dark-800 hover:bg-dark-700 text-zinc-400 rounded-lg transition">
+        Effacer la conversation
+      </button>
+    </div>
+
+    <!-- Chat Messages Window -->
+    <div id="chatMessages" class="flex-1 bg-dark-900 border border-dark-700 rounded-2xl p-5 overflow-y-auto flex flex-col gap-3 shadow-inner">
+      <div class="flex items-start gap-3 bg-dark-950/60 p-4 rounded-xl border border-dark-800 max-w-2xl">
+        <span class="text-lg">🤖</span>
+        <div class="text-xs text-zinc-300 leading-relaxed">
+          Bonjour ! Je suis votre assistant expert Power BI & Données. Vous pouvez me poser n'importe quelle question sur vos tableaux extraits, me demander une formule DAX complexe, un script Python ou une analyse statistique.
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Quick Prompts -->
+    <div class="flex flex-wrap gap-2">
+      <button onclick="sendQuickPrompt('Résume-moi les chiffres clés du tableau extrait')" class="text-[11px] px-3 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-zinc-400 hover:text-white border border-dark-700 transition">
+        📊 Résumer les données
+      </button>
+      <button onclick="sendQuickPrompt('Donne-moi une formule DAX de calcul de cumul Year-To-Date (YTD)')" class="text-[11px] px-3 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-zinc-400 hover:text-white border border-dark-700 transition">
+        ⚡ Formule DAX YTD
+      </button>
+      <button onclick="sendQuickPrompt('Quelles sont les anomalies ou valeurs atypiques dans ce tableau ?')" class="text-[11px] px-3 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-zinc-400 hover:text-white border border-dark-700 transition">
+        🔍 Détecter les anomalies
+      </button>
+    </div>
+
+    <!-- Chat Input Box -->
+    <div class="flex gap-2">
+      <input id="chatInput" onkeydown="if(event.key === 'Enter') sendChatMessage()" type="text" placeholder="Posez une question ou demandez une formule DAX..." class="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-indigo-500 transition">
+      <button onclick="sendChatMessage()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg transition cursor-pointer">
+        Envoyer ↗
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- FLOATING CHAT WIDGET (BOTTOM-RIGHT) -->
+  <!-- ======================================================== -->
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    
+    <!-- Floating Flyout Panel -->
+    <div id="floatingChatPanel" class="hidden mb-3 w-80 sm:w-96 h-[480px] bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in">
+      <div class="p-3.5 bg-dark-950 border-b border-dark-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base">🤖</span>
+          <span class="font-bold text-xs text-white">Assistant IA Flottant</span>
+        </div>
+        <button onclick="toggleFloatingChat()" class="text-zinc-400 hover:text-white text-xs">✕</button>
+      </div>
+      
+      <div id="floatingMessages" class="flex-1 p-3 overflow-y-auto flex flex-col gap-2.5 text-xs text-zinc-300">
+        <div class="bg-dark-950 p-2.5 rounded-lg border border-dark-800">
+          Posez une question rapide sur vos données sans quitter la page !
+        </div>
+      </div>
+
+      <div class="p-2.5 bg-dark-950 border-t border-dark-800 flex gap-2">
+        <input id="floatingInput" onkeydown="if(event.key === 'Enter') sendFloatingMessage()" type="text" placeholder="Votre message..." class="flex-1 bg-dark-900 border border-dark-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+        <button onclick="sendFloatingMessage()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold">↗</button>
+      </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button onclick="toggleFloatingChat()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-2xl flex items-center justify-center text-2xl transition cursor-pointer hover:scale-105">
+      💬
+    </button>
+  </div>
+
   <!-- Footer -->
-  <footer class="border-t border-dark-800 bg-dark-950/80 py-6 text-center text-xs text-zinc-500">
-    PowerBI Data Extractor &bull; Développé pour contourner les restrictions de partage &bull; Propulsé par Google Gemini Vision
+  <footer class="border-t border-dark-800 bg-dark-950/80 py-5 text-center text-xs text-zinc-500">
+    PowerBI Data Studio &bull; MoMoA Multi-Agents &bull; Propulsé par Google Gemini
   </footer>
 
   <!-- App Client Script -->
@@ -210,8 +411,32 @@
     let currentImageFile = null;
     let extractedRows = [];
     let currentColumns = [];
+    let chatHistory = [];
 
-    // Global Paste Listener for Screenshots (Ctrl+V)
+    // Navigation Tab Manager
+    function setMainTab(tab) {
+      document.getElementById('view-extractor').style.display = tab === 'extractor' ? 'flex' : 'none';
+      document.getElementById('view-momoa').style.display = tab === 'momoa' ? 'flex' : 'none';
+      document.getElementById('view-chat').style.display = tab === 'chat' ? 'flex' : 'none';
+
+      document.getElementById('tab-extractor').className = tab === 'extractor' ? "px-3.5 py-2 rounded-lg bg-pbi-yellow text-black shadow-md transition flex items-center gap-1.5" : "px-3.5 py-2 rounded-lg text-zinc-400 hover:text-white transition flex items-center gap-1.5";
+      document.getElementById('tab-momoa').className = tab === 'momoa' ? "px-3.5 py-2 rounded-lg bg-purple-600 text-white shadow-md transition flex items-center gap-1.5" : "px-3.5 py-2 rounded-lg text-zinc-400 hover:text-white transition flex items-center gap-1.5";
+      document.getElementById('tab-chat').className = tab === 'chat' ? "px-3.5 py-2 rounded-lg bg-indigo-600 text-white shadow-md transition flex items-center gap-1.5" : "px-3.5 py-2 rounded-lg text-zinc-400 hover:text-white transition flex items-center gap-1.5";
+    }
+
+    function switchExtractorMode(mode) {
+      const isScreen = mode === 'screenshot';
+      document.getElementById('section-screenshot').style.display = isScreen ? 'flex' : 'none';
+      document.getElementById('section-url').style.display = isScreen ? 'none' : 'flex';
+      document.getElementById('mode-screenshot-btn').className = isScreen 
+        ? "px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-pbi-yellow text-black shadow-md"
+        : "px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
+      document.getElementById('mode-url-btn').className = !isScreen 
+        ? "px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-pbi-blue text-white shadow-md"
+        : "px-4 py-2 rounded-xl font-semibold text-xs transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
+    }
+
+    // Paste Listener for Ctrl+V
     window.addEventListener('paste', e => {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
@@ -223,22 +448,17 @@
       }
     });
 
-    // Drag & Drop Listener
     const dropZone = document.getElementById('dropZone');
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drop-active'); });
     dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drop-active'); });
     dropZone.addEventListener('drop', e => {
       e.preventDefault();
       dropZone.classList.remove('drop-active');
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        setImage(e.dataTransfer.files[0]);
-      }
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) setImage(e.dataTransfer.files[0]);
     });
 
     function handleFileSelected(event) {
-      if (event.target.files && event.target.files[0]) {
-        setImage(event.target.files[0]);
-      }
+      if (event.target.files && event.target.files[0]) setImage(event.target.files[0]);
     }
 
     function setImage(file) {
@@ -254,30 +474,15 @@
       reader.readAsDataURL(file);
     }
 
-    function switchMode(mode) {
-      const isScreen = mode === 'screenshot';
-      document.getElementById('section-screenshot').style.display = isScreen ? 'flex' : 'none';
-      document.getElementById('section-url').style.display = isScreen ? 'none' : 'flex';
-
-      document.getElementById('mode-screenshot-btn').className = isScreen 
-        ? "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-yellow text-black shadow-lg"
-        : "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
-
-      document.getElementById('mode-url-btn').className = !isScreen 
-        ? "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-pbi-blue text-white shadow-lg"
-        : "px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-dark-850 text-zinc-400 hover:text-white border border-dark-700";
-    }
-
+    // Extraction Call
     async function runScreenshotExtraction() {
       if (!currentImageFile) {
-        alert("Veuillez coller (Ctrl+V) ou uploader une capture d'écran du rapport Power BI d'abord.");
+        alert("Veuillez coller (Ctrl+V) ou choisir une capture d'écran d'abord.");
         return;
       }
-
       const btn = document.getElementById('extractScreenshotBtn');
       btn.disabled = true;
-      document.getElementById('screenBtnText').innerText = "Gemini Vision extrait les tables...";
-      document.getElementById('screenBtnIcon').innerText = "⏳";
+      document.getElementById('screenBtnText').innerText = "Gemini Vision analyse l'image...";
 
       const formData = new FormData();
       formData.append("file", currentImageFile);
@@ -285,71 +490,48 @@
       if (instructions) formData.append("instructions", instructions);
 
       try {
-        const response = await fetch('/api/extract/screenshot', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) throw new Error("Erreur d'analyse de l'image");
-
-        const data = await response.json();
+        const res = await fetch('/api/extract/screenshot', { method: 'POST', body: formData });
+        const data = await res.json();
         extractedRows = data.records;
         currentColumns = data.columns;
-
         renderResults(data, `Méthode 1 (Gemini Vision) &bull; ${data.execution_time_sec}s`);
       } catch (e) {
         alert("Erreur : " + e.message);
       } finally {
         btn.disabled = false;
-        document.getElementById('screenBtnText').innerText = "Extraire les Données en Excel";
-        document.getElementById('screenBtnIcon').innerText = "⚡";
+        document.getElementById('screenBtnText').innerText = "Extraire les Données";
       }
     }
 
     async function runUrlExtraction() {
       const url = document.getElementById('pbiUrlInput').value.trim();
-      if (!url) {
-        alert("Veuillez saisir une URL de rapport Power BI.");
-        return;
-      }
-
+      if (!url) return alert("Veuillez entrer une URL.");
       const btn = document.getElementById('extractUrlBtn');
       btn.disabled = true;
-      document.getElementById('urlBtnText').innerText = "Interception Playwright en cours...";
-      document.getElementById('urlBtnIcon').innerText = "⏳";
+      document.getElementById('urlBtnText').innerText = "Interception...";
 
       try {
-        const response = await fetch('/api/extract/url', {
+        const res = await fetch('/api/extract/url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url })
         });
-
-        if (!response.ok) {
-          const err = await response.json();
-          throw new Error(err.detail || "Erreur lors du chargement du rapport");
-        }
-
-        const data = await response.json();
+        const data = await res.json();
         extractedRows = data.records;
         currentColumns = data.columns;
-
         renderResults(data, `Méthode 2 (${data.method}) &bull; ${data.execution_time_sec}s`);
       } catch (e) {
         alert("Erreur : " + e.message);
       } finally {
         btn.disabled = false;
         document.getElementById('urlBtnText').innerText = "Intercepter & Extraire";
-        document.getElementById('urlBtnIcon').innerText = "🚀";
       }
     }
 
     function renderResults(data, methodText) {
-      document.getElementById('countBadge').innerText = `${data.count} lignes extraites`;
+      document.getElementById('countBadge').innerText = `${data.count} lignes`;
       document.getElementById('methodStats').innerHTML = methodText;
-
       renderTable(data.columns, data.records);
-
       document.getElementById('resultsSection').classList.remove('hidden');
       document.getElementById('resultsSection').classList.add('flex');
       document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
@@ -358,14 +540,13 @@
     function renderTable(columns, records) {
       const thead = document.getElementById('tableHead');
       const tbody = document.getElementById('tableBody');
-
       thead.innerHTML = `<tr>
         <th class="py-3 px-4 w-12 text-center text-zinc-500">#</th>
         ${columns.map(c => `<th class="py-3 px-4 font-semibold text-zinc-200">${c}</th>`).join('')}
       </tr>`;
 
-      if (!records || records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${columns.length + 1}" class="text-center py-8 text-zinc-500 italic">Aucune donnée tabulaire détectée.</td></tr>`;
+      if (!records || !records.length) {
+        tbody.innerHTML = `<tr><td colspan="${columns.length + 1}" class="text-center py-8 text-zinc-500 italic">Aucune donnée tabulaire.</td></tr>`;
         return;
       }
 
@@ -379,10 +560,7 @@
 
     function filterData() {
       const q = document.getElementById('filterInput').value.toLowerCase().trim();
-      if (!q) {
-        renderTable(currentColumns, extractedRows);
-        return;
-      }
+      if (!q) return renderTable(currentColumns, extractedRows);
       const filtered = extractedRows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
       renderTable(currentColumns, filtered);
     }
@@ -392,13 +570,13 @@
       const res = await fetch('/api/export/pbix', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ records: extractedRows, filename: 'powerbi_rapport_extrait' })
+        body: JSON.stringify({ records: extractedRows, filename: 'powerbi_rapport' })
       });
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'powerbi_rapport_extrait.pbit';
+      a.download = 'powerbi_rapport.pbit';
       a.click();
     }
 
@@ -432,12 +610,145 @@
       a.click();
     }
 
-    function copyJSON() {
-      if (!extractedRows.length) return;
-      navigator.clipboard.writeText(JSON.stringify(extractedRows, null, 2));
-      const t = document.getElementById('copyText');
-      t.innerText = "✓ Copié !";
-      setTimeout(() => { t.innerText = "📋 JSON"; }, 2000);
+    // ==========================================
+    // MOMOA SWARM LOGIC
+    // ==========================================
+    async function runMoMoASwarm() {
+      const task = document.getElementById('momoaTaskInput').value.trim();
+      if (!task) return alert("Veuillez saisir une tâche pour MoMoA.");
+
+      const btn = document.getElementById('momoaSolveBtn');
+      btn.disabled = true;
+      document.getElementById('momoaBtnText').innerText = "Essaim en délibération...";
+
+      try {
+        const res = await fetch('/api/momoa/solve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task,
+            context_data: extractedRows.length ? JSON.stringify(extractedRows.slice(0, 15)) : null
+          })
+        });
+        const data = await res.json();
+        
+        document.getElementById('ariaResponse').innerText = data.agents.aria.response;
+        document.getElementById('devonResponse').innerText = data.agents.devon.response;
+        document.getElementById('vigilResponse').innerText = data.agents.vigil.response;
+        document.getElementById('voltResponse').innerText = data.agents.volt.response;
+        document.getElementById('nexusResponse').innerText = data.nexus_consensus;
+
+        document.getElementById('momoaResults').classList.remove('hidden');
+        document.getElementById('momoaResults').classList.add('flex');
+        document.getElementById('momoaResults').scrollIntoView({ behavior: 'smooth' });
+      } catch (e) {
+        alert("Erreur MoMoA : " + e.message);
+      } finally {
+        btn.disabled = false;
+        document.getElementById('momoaBtnText').innerText = "Lancer l'Essaim MoMoA";
+      }
+    }
+
+    function copyNexusCode() {
+      const text = document.getElementById('nexusResponse').innerText;
+      navigator.clipboard.writeText(text);
+      alert("Code Nexus copié dans le presse-papier !");
+    }
+
+    // ==========================================
+    // CHATBOT LOGIC
+    // ==========================================
+    function openChatWithData() {
+      setMainTab('chat');
+      sendQuickPrompt("Analyse les données du tableau que je viens d'extraire et résume-moi les métriques principales.");
+    }
+
+    function sendQuickPrompt(promptText) {
+      document.getElementById('chatInput').value = promptText;
+      sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendChatMessage('user', text);
+      input.value = '';
+
+      chatHistory.push({ role: 'user', content: text });
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: chatHistory,
+            current_data: extractedRows.length ? extractedRows : null
+          })
+        });
+        const data = await res.json();
+        appendChatMessage('assistant', data.reply);
+        chatHistory.push({ role: 'model', content: data.reply });
+      } catch (e) {
+        appendChatMessage('assistant', "Erreur : " + e.message);
+      }
+    }
+
+    function appendChatMessage(role, text) {
+      const container = document.getElementById('chatMessages');
+      const isUser = role === 'user';
+      const div = document.createElement('div');
+      div.className = `flex items-start gap-3 p-3.5 rounded-xl border ${isUser ? 'bg-indigo-950/40 border-indigo-500/30 self-end ml-12' : 'bg-dark-950/60 border-dark-800 mr-12'}`;
+      div.innerHTML = `
+        <span class="text-base">${isUser ? '👤' : '🤖'}</span>
+        <div class="text-xs text-zinc-200 leading-relaxed whitespace-pre-wrap">${text}</div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function clearChat() {
+      chatHistory = [];
+      document.getElementById('chatMessages').innerHTML = '';
+    }
+
+    // ==========================================
+    // FLOATING CHAT WIDGET
+    // ==========================================
+    function toggleFloatingChat() {
+      const panel = document.getElementById('floatingChatPanel');
+      panel.classList.toggle('hidden');
+      panel.classList.toggle('flex');
+    }
+
+    async function sendFloatingMessage() {
+      const input = document.getElementById('floatingInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('floatingMessages');
+      container.innerHTML += `<div class="bg-indigo-950/50 p-2 rounded-lg border border-indigo-500/20 text-white self-end">👤 ${text}</div>`;
+      input.value = '';
+
+      chatHistory.push({ role: 'user', content: text });
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: chatHistory,
+            current_data: extractedRows.length ? extractedRows : null
+          })
+        });
+        const data = await res.json();
+        container.innerHTML += `<div class="bg-dark-950 p-2 rounded-lg border border-dark-800 text-zinc-200">🤖 ${data.reply}</div>`;
+        chatHistory.push({ role: 'model', content: data.reply });
+        container.scrollTop = container.scrollHeight;
+      } catch (e) {
+        container.innerHTML += `<div class="text-rose-400 p-2">Erreur : ${e.message}</div>`;
+      }
     }
   </script>
 </body>

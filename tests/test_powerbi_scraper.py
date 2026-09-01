@@ -74,3 +74,27 @@ def test_pbix_export_route():
     )
     assert res.status_code == 200
     assert "application/octet-stream" in res.headers["content-type"]
+
+
+def test_chatbot_endpoint():
+    res = client.post(
+        "/api/chat",
+        json={
+            "messages": [{"role": "user", "content": "Hello"}],
+            "current_data": [{"col1": "A", "col2": 100}],
+        }
+    )
+    assert res.status_code == 200
+    assert "reply" in res.json()
+
+
+def test_momoa_endpoint():
+    res = client.post(
+        "/api/momoa/solve",
+        json={"task": "Calculer la TVA"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "agents" in data
+    assert "aria" in data["agents"]
+    assert "nexus_consensus" in data

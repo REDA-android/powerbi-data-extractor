@@ -21,3 +21,5 @@ Thumbs.db
 
 # Power BI temp files
 *.tmp
+
+.vercel
